@@ -29,6 +29,7 @@ namespace mRemoteNG.Connection
         private bool _batchingSaves = false;
         private bool _saveRequested = false;
         private bool _saveAsyncRequested = false;
+        private bool _isDatabaseRecheable = false;
 
         public bool IsConnectionsFileLoaded { get; set; }
         public bool UsingDatabase { get; private set; }
@@ -117,7 +118,6 @@ namespace mRemoteNG.Connection
         {
             var oldConnectionTreeModel = ConnectionTreeModel;
             var oldIsUsingDatabaseValue = UsingDatabase;
-
             var connectionLoader = useDatabase
                 ? (IConnectionsLoader)new SqlConnectionsLoader(_localConnectionPropertiesSerializer,
                                                                _localConnectionPropertiesDataProvider)
@@ -126,14 +126,17 @@ namespace mRemoteNG.Connection
             var newConnectionTreeModel = connectionLoader.Load();
 
             if (useDatabase)
+            {
                 LastSqlUpdate = DateTime.Now;
-
+                _isDatabaseRecheable = ((SqlConnectionsLoader)connectionLoader).IsDatabaseRecheable();
+            }
             if (newConnectionTreeModel == null)
             {
                 DialogFactory.ShowLoadConnectionsFailedDialog(connectionFileName, "Decrypting connection file failed",
                                                               IsConnectionsFileLoaded);
                 return;
-            }
+            } 
+                
 
             IsConnectionsFileLoaded = true;
             ConnectionFileName = connectionFileName;
@@ -243,7 +246,7 @@ namespace mRemoteNG.Connection
                 var saver = useDatabase
                     ? (ISaver<ConnectionTreeModel>)new SqlConnectionsSaver(saveFilter,
                                                                            _localConnectionPropertiesSerializer,
-                                                                           _localConnectionPropertiesDataProvider)
+                                                                           _localConnectionPropertiesDataProvider,_isDatabaseRecheable)
                     : new XmlConnectionsSaver(connectionFileName, saveFilter);
 
                 saver.Save(connectionTreeModel, propertyNameTrigger);

@@ -26,17 +26,20 @@ namespace mRemoteNG.Config.Connections
         private readonly SaveFilter _saveFilter;
         private readonly ISerializer<IEnumerable<LocalConnectionPropertiesModel>, string> _localPropertiesSerializer;
         private readonly IDataProvider<string> _dataProvider;
+        private readonly Boolean _isDatabaseRecheable;
 
         public SqlConnectionsSaver(SaveFilter saveFilter,
                                    ISerializer<IEnumerable<LocalConnectionPropertiesModel>, string>
                                        localPropertieSerializer,
-                                   IDataProvider<string> localPropertiesDataProvider)
+                                   IDataProvider<string> localPropertiesDataProvider,
+                                   Boolean isDatabaseRecheable)
         {
             if (saveFilter == null)
                 throw new ArgumentNullException(nameof(saveFilter));
             _saveFilter = saveFilter;
             _localPropertiesSerializer = localPropertieSerializer.ThrowIfNull(nameof(localPropertieSerializer));
             _dataProvider = localPropertiesDataProvider.ThrowIfNull(nameof(localPropertiesDataProvider));
+            _isDatabaseRecheable = isDatabaseRecheable;
         }
 
         public void Save(ConnectionTreeModel connectionTreeModel, string propertyNameTrigger = "")
@@ -49,6 +52,12 @@ namespace mRemoteNG.Config.Connections
             {
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
                                                     $"Property {propertyNameTrigger} is local only. Not saving to database.");
+                return;
+            }
+            if (!_isDatabaseRecheable)
+            {
+                Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
+                                                    "Cannot save, the database is offline. Restart to go online!");
                 return;
             }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security;
 using mRemoteNG.Config.DatabaseConnectors;
@@ -23,6 +24,7 @@ namespace mRemoteNG.Config.Connections
             _localConnectionPropertiesDeserializer;
 
         private readonly IDataProvider<string> _dataProvider;
+        private Boolean _isDatabaseRecheable = false;
 
         public Func<Optional<SecureString>> AuthenticationRequestor { get; set; } =
             () => MiscTools.PasswordDialog("", false);
@@ -38,25 +40,47 @@ namespace mRemoteNG.Config.Connections
 
         public ConnectionTreeModel Load()
         {
-            var connector = DatabaseConnectorFactory.DatabaseConnectorFromSettings();
-            var dataProvider = new SqlDataProvider(connector);
-            var metaDataRetriever = new SqlDatabaseMetaDataRetriever();
-            var databaseVersionVerifier = new SqlDatabaseVersionVerifier(connector);
-            var cryptoProvider = new LegacyRijndaelCryptographyProvider();
+            try
+            {
+                var connector = DatabaseConnectorFactory.DatabaseConnectorFromSettings();
+                var dataProvider = new SqlDataProvider(connector);
+                var metaDataRetriever = new SqlDatabaseMetaDataRetriever();
+                var databaseVersionVerifier = new SqlDatabaseVersionVerifier(connector);
+                var cryptoProvider = new LegacyRijndaelCryptographyProvider();
 
-            var metaData = metaDataRetriever.GetDatabaseMetaData(connector) ?? 
-                           HandleFirstRun(metaDataRetriever, connector);
-            var decryptionKey = GetDecryptionKey(metaData);
+                var metaData = metaDataRetriever.GetDatabaseMetaData(connector) ??
+                               HandleFirstRun(metaDataRetriever, connector);
+                var decryptionKey = GetDecryptionKey(metaData);
 
-            if (!decryptionKey.Any())
-                throw new Exception("Could not load SQL connections");
+                if (!decryptionKey.Any())
+                    throw new Exception("Could not load SQL connections");
 
-            databaseVersionVerifier.VerifyDatabaseVersion(metaData.ConfVersion);
-            var dataTable = dataProvider.Load();
-            var deserializer = new DataTableDeserializer(cryptoProvider, decryptionKey.First());
-            var connectionTree = deserializer.Deserialize(dataTable);
-            ApplyLocalConnectionProperties(connectionTree.RootNodes.First(i => i is RootNodeInfo));
-            return connectionTree;
+                databaseVersionVerifier.VerifyDatabaseVersion(metaData.ConfVersion);
+                var dataTable = dataProvider.Load();
+                var deserializer = new DataTableDeserializer(cryptoProvider, decryptionKey.First());
+                var connectionTree = deserializer.Deserialize(dataTable);
+                ApplyLocalConnectionProperties(connectionTree.RootNodes.First(i => i is RootNodeInfo));
+                if (CacheDatabase())
+                {
+                    var fileName = GetSQLCacheFilePath();
+                    var xmlConnectionSaver = new XmlConnectionsSaver(fileName, new SaveFilter());
+                    xmlConnectionSaver.Save(connectionTree);
+                }
+                _isDatabaseRecheable = true;
+                return connectionTree;
+
+            } catch (Exception ex)
+            {
+                _isDatabaseRecheable = false;
+                if (CacheDatabase())
+                {
+                    // Try to use xml cache file
+                        var xmlConnectionLoader = new XmlConnectionsLoader(GetSQLCacheFilePath());
+                    return xmlConnectionLoader.Load();
+                }
+                return null;
+            }
+         
         }
 
         private Optional<SecureString> GetDecryptionKey(SqlConnectionListMetaData metaData)
@@ -98,5 +122,21 @@ namespace mRemoteNG.Config.Connections
 	        metaDataRetriever.WriteDatabaseMetaData(new RootNodeInfo(RootNodeType.Connection), connector);
 	        return metaDataRetriever.GetDatabaseMetaData(connector);
 		}
+
+        private bool CacheDatabase()
+        {
+            return mRemoteNG.Settings.Default.SQLCacheDatabaseEntry;
+        }
+
+        private String GetSQLCacheFilePath()
+        {
+            return Path.Combine(Environment.GetFolderPath(
+                           Environment.SpecialFolder.ApplicationData), "sqlcache.xml");
+        }
+
+        public Boolean IsDatabaseRecheable()
+        {
+            return _isDatabaseRecheable;
+        }
     }
 }
