@@ -78,7 +78,7 @@ namespace mRemoteNG.Config.Connections
                         var xmlConnectionLoader = new XmlConnectionsLoader(GetSQLCacheFilePath());
                     return xmlConnectionLoader.Load();
                 }
-                return null;
+                throw ex;
             }
          
         }
@@ -131,7 +131,7 @@ namespace mRemoteNG.Config.Connections
         private String GetSQLCacheFilePath()
         {
             return Path.Combine(Environment.GetFolderPath(
-                           Environment.SpecialFolder.ApplicationData), "sqlcache.xml");
+                           Environment.SpecialFolder.ApplicationData), "mRemoteNG/sqlcache.xml");
         }
 
         public Boolean IsDatabaseRecheable()
