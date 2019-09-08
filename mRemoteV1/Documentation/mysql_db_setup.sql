@@ -174,6 +174,15 @@ DROP TABLE IF EXISTS `tblUpdate`;
 CREATE TABLE `tblUpdate` (
     `LastUpdate` datetime(3) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `tblSettings` (
+	Property varchar(100) NOT NULL,
+	Value varchar(100) NULL,
+	CONSTRAINT tblSettings_PK PRIMARY KEY (Property)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 /*!40101 SET character_set_client = @saved_cs_client */;
     
     

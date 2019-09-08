@@ -156,3 +156,9 @@ CREATE TABLE [dbo].[tblUpdate] (
 	[LastUpdate] [datetime] NULL 
 ) ON [PRIMARY]
 GO
+
+CREATE TABLE [dbo].[tblSettings] (
+	Property varchar(100) NOT NULL,
+	Value varchar(100),
+	CONSTRAINT tblSettings_PK PRIMARY KEY (Property)
+) GO
