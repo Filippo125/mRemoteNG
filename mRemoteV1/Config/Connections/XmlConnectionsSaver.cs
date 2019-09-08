@@ -15,8 +15,9 @@ namespace mRemoteNG.Config.Connections
     {
         private readonly string _connectionFileName;
         private readonly SaveFilter _saveFilter;
+        private readonly bool _withBackup;
 
-        public XmlConnectionsSaver(string connectionFileName, SaveFilter saveFilter)
+        public XmlConnectionsSaver(string connectionFileName, SaveFilter saveFilter, bool withBackup)
         {
             if (string.IsNullOrEmpty(connectionFileName))
                 throw new ArgumentException($"Argument '{nameof(connectionFileName)}' cannot be null or empty");
@@ -25,7 +26,10 @@ namespace mRemoteNG.Config.Connections
 
             _connectionFileName = connectionFileName;
             _saveFilter = saveFilter;
+            _withBackup = withBackup;
         }
+
+        public XmlConnectionsSaver(string connectionFileName,SaveFilter saveFilter) : this(connectionFileName, saveFilter, true) { }
 
         public void Save(ConnectionTreeModel connectionTreeModel, string propertyNameTrigger = "")
         {
@@ -43,7 +47,7 @@ namespace mRemoteNG.Config.Connections
                 var rootNode = connectionTreeModel.RootNodes.OfType<RootNodeInfo>().First();
                 var xml = xmlConnectionsSerializer.Serialize(rootNode);
 
-                var fileDataProvider = new FileDataProviderWithRollingBackup(_connectionFileName);
+                var fileDataProvider = (_withBackup ? new FileDataProviderWithRollingBackup(_connectionFileName) : new FileDataProvider(_connectionFileName));
                 fileDataProvider.Save(xml);
             }
             catch (Exception ex)
