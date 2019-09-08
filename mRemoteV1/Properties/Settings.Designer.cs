@@ -134,18 +134,6 @@ namespace mRemoteNG {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AutomaticallyGetSessionInfo {
-            get {
-                return ((bool)(this["AutomaticallyGetSessionInfo"]));
-            }
-            set {
-                this["AutomaticallyGetSessionInfo"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool LoadConsFromCustomLocation {
             get {
                 return ((bool)(this["LoadConsFromCustomLocation"]));
@@ -2607,8 +2595,8 @@ namespace mRemoteNG {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("cs-CZ,de,el,en,en-US,es-AR,es,fr,hu,it,ja-JP,ko-KR,nb-NO,nl,pt,pt-BR,pl,ru,uk,tr-" +
-            "TR,zh-CN,zh-TW")]
+        [global::System.Configuration.DefaultSettingValueAttribute("cs-CZ,de,el,en,en-US,es-AR,es,fr,hu,it,lt,ja-JP,ko-KR,nb-NO,nl,pt,pt-BR,pl,ru,uk," +
+            "tr-TR,zh-CN,zh-TW")]
         public string SupportedUICultures {
             get {
                 return ((string)(this["SupportedUICultures"]));
@@ -2948,6 +2936,18 @@ namespace mRemoteNG {
             }
             set {
                 this["InhDefaultRdpVersion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool StartMinimized {
+            get {
+                return ((bool)(this["StartMinimized"]));
+            }
+            set {
+                this["StartMinimized"] = value;
             }
         }
     }
