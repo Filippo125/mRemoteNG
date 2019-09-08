@@ -35,7 +35,7 @@ namespace mRemoteNG.Config.DataProviders
         {
             if (DbUserIsReadOnly())
             {
-                Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
                                                     "Trying to save connections but the SQL read only checkbox is checked, aborting!");
                 return;
             }

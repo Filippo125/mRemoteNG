@@ -63,7 +63,7 @@ namespace mRemoteNG.Config.Connections
 
             if (SqlUserIsReadOnly())
             {
-                Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
                                                     "Trying to save connection tree but the SQL read only checkbox is checked, aborting!");
                 return;
             }
@@ -185,6 +185,7 @@ namespace mRemoteNG.Config.Connections
 
         private bool SqlUserIsReadOnly()
         {
+
             return mRemoteNG.Settings.Default.SQLReadOnly;
         }
     }
