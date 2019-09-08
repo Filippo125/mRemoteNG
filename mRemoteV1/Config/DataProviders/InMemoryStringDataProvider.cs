@@ -18,5 +18,10 @@
         {
             _contents = contents;
         }
+
+        public bool IsReadOnly()
+        {
+            return false;
+        }
     }
 }

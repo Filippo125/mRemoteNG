@@ -5,5 +5,7 @@
         TFormat Load();
 
         void Save(TFormat contents);
+
+        bool IsReadOnly();
     }
 }

@@ -89,7 +89,29 @@ namespace mRemoteNG.Config.DataProviders
 
         private bool DbUserIsReadOnly()
         {
+            var exclude = false;
+            if (!exclude)
+            {
+                var dbQuery = DatabaseConnector.DbCommand("SELECT Value FROM tblSettings WHERE Property = 'ReadOnly'");
+                DatabaseConnector.AssociateItemToThisConnector(dbQuery);
+                if (!DatabaseConnector.IsConnected)
+                    OpenConnection();
+                var dbDataReader = dbQuery.ExecuteReader(CommandBehavior.CloseConnection);
+
+                if (dbDataReader.HasRows)
+                {
+                    dbDataReader.Read(); // Read first row
+                    var propertyValue = dbDataReader.GetString(0);
+                    dbDataReader.Close();
+                    return propertyValue.Equals("1");
+                }
+            }
             return mRemoteNG.Settings.Default.SQLReadOnly;
+        }
+
+        public bool IsReadOnly()
+        {
+            return DbUserIsReadOnly();
         }
     }
 }

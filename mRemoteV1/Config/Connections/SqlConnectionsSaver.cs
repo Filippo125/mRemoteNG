@@ -61,16 +61,17 @@ namespace mRemoteNG.Config.Connections
                 return;
             }
 
-            if (SqlUserIsReadOnly())
-            {
-                Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
-                                                    "Trying to save connection tree but the SQL read only checkbox is checked, aborting!");
-                return;
-            }
-
             using (var dbConnector = DatabaseConnectorFactory.DatabaseConnectorFromSettings())
             {
                 dbConnector.Connect();
+
+                if (SqlUserIsReadOnly(dbConnector))
+                {
+                    Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
+                                                        "Trying to save connection tree but the SQL read only checkbox is checked, aborting!");
+                    return;
+                }
+
                 var databaseVersionVerifier = new SqlDatabaseVersionVerifier(dbConnector);
                 var metaDataRetriever = new SqlDatabaseMetaDataRetriever();
                 var metaData = metaDataRetriever.GetDatabaseMetaData(dbConnector);
@@ -183,10 +184,12 @@ namespace mRemoteNG.Config.Connections
             dbQuery.ExecuteNonQuery();
         }
 
-        private bool SqlUserIsReadOnly()
+        private bool SqlUserIsReadOnly(IDatabaseConnector databaseConnector)
         {
-
-            return mRemoteNG.Settings.Default.SQLReadOnly;
+            var dataProvider = new SqlDataProvider(databaseConnector);
+            var isReadOnly = dataProvider.IsReadOnly();
+            return isReadOnly;
+            //return mRemoteNG.Settings.Default.SQLReadOnly;
         }
     }
 }

@@ -66,5 +66,10 @@ namespace mRemoteNG.Config.DataProviders
             if (dirname == null) return;
             Directory.CreateDirectory(dirname);
         }
+
+        public bool IsReadOnly()
+        {
+            return false;
+        }
     }
 }
