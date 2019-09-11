@@ -60,7 +60,7 @@ namespace mRemoteNG.Config.Connections
                 var deserializer = new DataTableDeserializer(cryptoProvider, decryptionKey.First());
                 var connectionTree = deserializer.Deserialize(dataTable);
                 ApplyLocalConnectionProperties(connectionTree.RootNodes.First(i => i is RootNodeInfo));
-                if (metaDataRetriever.IsLocalCacheEnabled(connector))
+                if (UserLocalCacheDatabaseEnabled() && metaDataRetriever.IsLocalCacheEnabled(connector))
                 {
                     var fileName = GetSQLCacheFilePath();
                     var xmlConnectionSaver = new XmlConnectionsSaver(fileName, new SaveFilter(),false);
@@ -129,6 +129,11 @@ namespace mRemoteNG.Config.Connections
             return File.Exists(localCacheFile);
 
             //return mRemoteNG.Settings.Default.SQLCacheDatabaseEntry;
+        }
+
+        private bool UserLocalCacheDatabaseEnabled()
+        {
+            return mRemoteNG.Settings.Default.SQLCacheDatabaseEntry;
         }
 
         private String GetSQLCacheFilePath()
