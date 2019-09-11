@@ -90,5 +90,40 @@ namespace mRemoteNG.Config.Serializers.MsSql
 		        Runtime.MessageCollector.AddMessage(MessageClass.ErrorMsg, $"UpdateRootNodeTable: rootTreeNode was null. Could not insert!");
 	        }
 		}
+
+        public bool IsLocalCacheEnabled(IDatabaseConnector databaseConnector)
+        {
+            DbDataReader dbDataReader = null;
+
+            try
+            {
+                var dbCommand = databaseConnector.DbCommand("SELECT Value FROM tblSettings WHERE Property = 'LocalCacheEnabled'");
+                if (!databaseConnector.IsConnected)
+                    databaseConnector.Connect();
+                dbDataReader = dbCommand.ExecuteReader();
+                if (dbDataReader.HasRows)
+                {
+                    dbDataReader.Read();
+                    var PropertyValue = dbDataReader.GetString(0);
+                    Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg, $"LocalCacheEnabled = {PropertyValue}");
+                    return PropertyValue.Equals("1");
+                }
+                return false; //TODO: convert to raise exception
+
+
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddMessage(MessageClass.ErrorMsg, $"Retrieving database version failed. {ex}");
+                throw;
+            }
+            finally
+            {
+                if (dbDataReader != null && !dbDataReader.IsClosed)
+                    dbDataReader.Close();
+            }
+
+            return false; //TODO: convert to raise exception
+        }
     }
 }
