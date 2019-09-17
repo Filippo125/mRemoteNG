@@ -24,14 +24,13 @@ namespace mRemoteNG.Config.Serializers.Versioning
             Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
                                                 "Upgrading database from version 2.7 to version 2.8.");
             const string sqlText = @"
-CREATE TABLE tblSettingss (
+CREATE TABLE tblSettings (
 	Property varchar(100) NOT NULL,
 	Value varchar(100) NULL,
 	CONSTRAINT tblSettings_PK PRIMARY KEY (Property)
 );
 INSERT INTO tblSettings(Property,Value) VALUES ('ReadOnly',0),('LocalCacheEnabled',0);
-UPDATE tblRoot
-    SET ConfVersion='2.8'";
+UPDATE tblRoot SET ConfVersion='2.8'";
             var dbCommand = _databaseConnector.DbCommand(sqlText);
             dbCommand.ExecuteNonQuery();
 

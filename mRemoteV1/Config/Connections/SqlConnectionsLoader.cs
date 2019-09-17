@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security;
+using mRemoteNG.App;
 using mRemoteNG.Config.DatabaseConnectors;
 using mRemoteNG.Config.DataProviders;
 using mRemoteNG.Config.Serializers;
 using mRemoteNG.Config.Serializers.MsSql;
 using mRemoteNG.Config.Serializers.Versioning;
 using mRemoteNG.Container;
+using mRemoteNG.Messages;
 using mRemoteNG.Security;
 using mRemoteNG.Security.Authentication;
 using mRemoteNG.Security.SymmetricEncryption;
@@ -62,7 +64,10 @@ namespace mRemoteNG.Config.Connections
                 ApplyLocalConnectionProperties(connectionTree.RootNodes.First(i => i is RootNodeInfo));
                 if (UserLocalCacheDatabaseEnabled() && metaDataRetriever.IsLocalCacheEnabled(connector))
                 {
+
                     var fileName = GetSQLCacheFilePath();
+                    Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
+                                                        "Create DBCache on " + fileName);
                     var xmlConnectionSaver = new XmlConnectionsSaver(fileName, new SaveFilter(),false);
                     xmlConnectionSaver.Save(connectionTree);
                 }
