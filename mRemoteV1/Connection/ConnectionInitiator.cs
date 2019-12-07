@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using mRemoteNG.App;
 using mRemoteNG.Connection.Protocol;
 using mRemoteNG.Container;
+using mRemoteNG.Credential;
+using mRemoteNG.Credential.KeePass;
 using mRemoteNG.Messages;
 using mRemoteNG.UI.Forms;
 using mRemoteNG.UI.Panels;
@@ -56,7 +58,23 @@ namespace mRemoteNG.Connection
         {
             if (connectionInfo == null)
                 return;
+            KeePassEntry newCredential = null;
+            try
+            {
+                KeePassHttpClient keePassHttpClient = new KeePassHttpClient();
+                newCredential = keePassHttpClient.GetLogin(connectionInfo.Hostname);
+                if (newCredential != null)
+                {
+                    connectionInfo.Password = newCredential.Password;
+                    connectionInfo.Username = newCredential.Login;
+                }
+            } catch (Exception ex)
+            {
+                //Runtime.MessageCollector.AddExceptionStackTrace("KeepassHttpClient", ex);
 
+            }
+           
+            
             try
             {
                 if (connectionInfo.Hostname == "" && connectionInfo.Protocol != ProtocolType.IntApp)
@@ -106,6 +124,14 @@ namespace mRemoteNG.Connection
             catch (Exception ex)
             {
                 Runtime.MessageCollector.AddExceptionStackTrace(Language.strConnectionOpenFailed, ex);
+            }
+            finally
+            {
+                if (newCredential != null)
+                {
+                    connectionInfo.Password = "";
+                    connectionInfo.Username = "";
+                }
             }
         }
 
