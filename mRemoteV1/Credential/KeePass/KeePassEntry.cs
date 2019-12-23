@@ -14,5 +14,16 @@ namespace mRemoteNG.Credential.KeePass
         public string Name { get; set; }
 
 
+        public KeePassEntry(string name, string uuid, string login, string password)
+        {
+            Login = login;
+            Name = name;
+            Uuid = uuid;
+            Password = password;
+        }
+        public KeePassEntry()
+        {
+
+        }
     }
 }

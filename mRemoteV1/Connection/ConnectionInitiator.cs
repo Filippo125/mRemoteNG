@@ -59,22 +59,26 @@ namespace mRemoteNG.Connection
             if (connectionInfo == null)
                 return;
             KeePassEntry newCredential = null;
-            try
+            if (Settings.Default.UseKeePass && connectionInfo.UserField != "")
             {
-                KeePassHttpClient keePassHttpClient = new KeePassHttpClient();
-                newCredential = keePassHttpClient.GetLogin(connectionInfo.Hostname);
-                if (newCredential != null)
+                try
                 {
-                    connectionInfo.Password = newCredential.Password;
-                    connectionInfo.Username = newCredential.Login;
+                    KeePassHttpClient keePassHttpClient = new KeePassHttpClient();
+                    newCredential = keePassHttpClient.GetLogin(connectionInfo.UserField);
+                    if (newCredential != null)
+                    {
+                        connectionInfo.Password = newCredential.Password;
+                        connectionInfo.Username = newCredential.Login;
+                    }
                 }
-            } catch (Exception ex)
-            {
-                //Runtime.MessageCollector.AddExceptionStackTrace("KeepassHttpClient", ex);
+                catch (Exception ex)
+                {
+                    //Runtime.MessageCollector.AddExceptionStackTrace("KeepassHttpClient", ex);
 
+                }
             }
-           
-            
+
+
             try
             {
                 if (connectionInfo.Hostname == "" && connectionInfo.Protocol != ProtocolType.IntApp)

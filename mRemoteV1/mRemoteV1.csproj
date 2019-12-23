@@ -568,6 +568,12 @@
     <Compile Include="UI\Forms\Input\FrmInputBox.Designer.cs">
       <DependentUpon>FrmInputBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Forms\OptionsPages\KeePassPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\OptionsPages\KeePassPage.Designer.cs">
+      <DependentUpon>KeePassPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Forms\OptionsPages\AdvancedPage.Designer.cs">
       <DependentUpon>AdvancedPage.cs</DependentUpon>
     </Compile>
@@ -953,6 +959,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\Input\FrmInputBox.resx">
       <DependentUpon>FrmInputBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Forms\OptionsPages\KeePassPage.resx">
+      <DependentUpon>KeePassPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\OptionsPages\AdvancedPage.resx">
       <DependentUpon>AdvancedPage.cs</DependentUpon>

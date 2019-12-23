@@ -35,18 +35,31 @@ namespace mRemoteNG.Credential.KeePass
             Authenticate();
         }
 
+        public KeePassHttpClient(bool newConfig)
+        {
+            if (! newConfig)
+            {
+                LoadConfig();
+                Authenticate();
+            }else
+            {
+                SaveNewConfig("http://localhost:19455");
+            }
+        }
 
-        public Dictionary<string, object> DoRequest(Dictionary<string, object> request)
+        private Dictionary<string, object> DoRequest(Dictionary<string, object> request)
+        {
+            RijndaelManaged aes = new RijndaelManaged();
+            aes.KeySize = 256;
+            aes.Mode = CipherMode.CBC;
+            aes.Key = key;
+            return DoRequest(request, aes, uid, url);
+        }
+        private Dictionary<string, object> DoRequest(Dictionary<string, object> request, RijndaelManaged aes, string uid, string url)
         {
             try
             {
-                RijndaelManaged aes = new RijndaelManaged();
-                aes.KeySize = 256;
-                //aes.BlockSize = 128;
-                //aes.Padding = PaddingMode.PKCS7;
-                aes.Mode = CipherMode.CBC;
-
-                aes.Key = key;
+                
                 aes.GenerateIV();
                 string base64IV = Convert.ToBase64String(aes.IV);
                 ICryptoTransform AESEncrypt = aes.CreateEncryptor(aes.Key, aes.IV);
@@ -80,16 +93,17 @@ namespace mRemoteNG.Credential.KeePass
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                    return new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(responseString);
+                    var responseDict = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(responseString);
+                    return DecryptRequest(responseDict, aes);
                 }
                 throw new Exception("Status code is not ok");
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error encrypting: " + e.Message);
-                throw new Exception("Error encrypting: " + e.Message);
+                throw new Exception("Error: " + e.Message);
             }
         }
+
 
         private string EncryptRequest(Dictionary<string, object> request, ICryptoTransform crypto)
         {
@@ -123,31 +137,86 @@ namespace mRemoteNG.Credential.KeePass
             dict.Add("Url", name);
             dict.Add("SortSelection", false);
             var response = DoRequest(dict);
-            var entries = DecryptRequest(response);
+            List<object> entries = (List<object>)response["Entries"];
             if (entries.Count >= 1)
             {
-                return entries[0];
+                var entry =(Dictionary<string,object>)entries[0];
+                return new KeePassEntry((string)entry["Name"], (string)entry["Uuid"], (string)entry["Login"], (string)entry["Password"]);
             }
             return new KeePassEntry();
         }
 
-        private List<KeePassEntry> DecryptRequest(Dictionary<string, object> cryptoDict)
+        private object IDecryptObject(object cryptoObject,ICryptoTransform decrypto)
         {
-            RijndaelManaged aes = new RijndaelManaged();
-            aes.KeySize = 256;
-            aes.Mode = CipherMode.CBC;
-            aes.Key = key;
+            byte[] buffer;
+            if (cryptoObject is Dictionary<string,object>)
+            {
+                Dictionary<string, object> cryptoDict = (Dictionary<string, object>)cryptoObject;
+                Dictionary<string, object> newDict = new Dictionary<string, object>();
+                foreach (string key in cryptoDict.Keys)
+                {
+                    newDict[key] = IDecryptObject(cryptoDict[key], decrypto);
+                }
+                return newDict;
+            }
+            else if (cryptoObject is ArrayList || cryptoObject is List<object> )
+            {
+                var cryptoList = (ArrayList) cryptoObject;
+                List<object> newList = new List<object>();
+                foreach (var obj in (ArrayList)cryptoObject)
+                    newList.Add(IDecryptObject(obj, decrypto));
+                return newList;
+            }
+            else if(cryptoObject is string)
+            {
+                try
+                {
+                    buffer = Convert.FromBase64String((string)cryptoObject);
+                    return encoding.GetString(decrypto.TransformFinalBlock(buffer, 0, buffer.Length));
+                }
+                catch (Exception) {}
+            }
+            return cryptoObject;
+        }
+
+        private Dictionary<string,object> DecryptRequest(Dictionary<string, object> cryptoDict, RijndaelManaged aes)
+        {
             var nonce = (string)cryptoDict["Nonce"];
             aes.IV = Convert.FromBase64String(nonce);
 
             var signature = Convert.FromBase64String((string)cryptoDict["Verifier"]);
             var decrypto = aes.CreateDecryptor(aes.Key, aes.IV);
             var verifier = encoding.GetString(decrypto.TransformFinalBlock(signature, 0, signature.Length));
-            if ((verifier != nonce) || (uid != cryptoDict["Id"]) || (dbHash != cryptoDict["Hash"] ))
+            if (!(cryptoDict["RequestType"].Equals("associate")) && ((verifier != nonce) || (!uid.Equals(cryptoDict["Id"])) || (!dbHash.Equals(cryptoDict["Hash"]))))
             {
-                Console.WriteLine("Error decrypting");
+                throw new Exception("Error decrypting keepass response");
             }
+            var o = IDecryptObject(cryptoDict, decrypto);
+            return (Dictionary<string, object>) o;
+
+
+            //return cryptoDict;
+            //return newEntries;
+        }
+
+        private Dictionary<string, object> PDecryptRequest(Dictionary<string, object> cryptoDict, RijndaelManaged aes)
+        {
             List<KeePassEntry> newEntries = new List<KeePassEntry>();
+            var nonce = (string)cryptoDict["Nonce"];
+            aes.IV = Convert.FromBase64String(nonce);
+
+            var signature = Convert.FromBase64String((string)cryptoDict["Verifier"]);
+            var decrypto = aes.CreateDecryptor(aes.Key, aes.IV);
+            var verifier = encoding.GetString(decrypto.TransformFinalBlock(signature, 0, signature.Length));
+            if ((verifier != nonce) || (uid.Equals(cryptoDict["Id"])) || (dbHash.Equals(cryptoDict["Hash"])))
+            {
+                throw new Exception("Error decrypting keepass response");
+            }
+
+            foreach (KeyValuePair<string, object> kvp in cryptoDict)
+            {
+
+            }
             if (cryptoDict.ContainsKey("Entries"))
             {
 
@@ -172,7 +241,8 @@ namespace mRemoteNG.Credential.KeePass
                 }
 
             }
-            return newEntries;
+            return null;
+            //return newEntries;
         }
 
 
@@ -198,7 +268,31 @@ namespace mRemoteNG.Credential.KeePass
             key = Convert.FromBase64String(lineList[1]);
             dbHash = encoding.GetString(Convert.FromBase64String(lineList[2]));
             url = encoding.GetString(Convert.FromBase64String(lineList[3]));
+        }
 
+        private void SaveNewConfig(string url)
+        {
+            List<string> lineList = new List<string>();
+            RijndaelManaged aes = new RijndaelManaged();
+            aes.KeySize = 256;
+            aes.Mode = CipherMode.CBC;
+            aes.GenerateKey();
+            var dict = new Dictionary<string, object>();
+            dict.Add("RequestType", "associate");
+            dict.Add("Key", Convert.ToBase64String(aes.Key));
+            var response = DoRequest(dict,aes,"",url);
+
+            lineList.Add(Convert.ToBase64String(encoding.GetBytes((string)response["Id"])));
+            lineList.Add(Convert.ToBase64String(aes.Key));
+            lineList.Add(Convert.ToBase64String(encoding.GetBytes((string)response["Hash"])));
+            lineList.Add(Convert.ToBase64String(encoding.GetBytes(url)));
+            System.IO.File.WriteAllLines(@"./" + SETTINGSFILE, lineList);
+            
+        }
+
+        public static bool ExistsConfig()
+        {
+            return System.IO.File.Exists(@"./" + SETTINGSFILE);
         }
     }
 }
