@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright(c) crdx
 // 
@@ -135,7 +135,10 @@ namespace mRemoteNG.Config.Settings.Providers
             var settingNode = targetNode.SelectSingleNode($"setting[@name='{propertyValue.Name}']");
 
             if (settingNode != null)
+            {
+                Console.WriteLine(settingNode.OuterXml);
                 settingNode.InnerText = propertyValue.SerializedValue.ToString();
+            }
             else
             {
                 settingNode = _rootDocument.CreateElement("setting");

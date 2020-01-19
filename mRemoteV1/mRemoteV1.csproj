@@ -96,9 +96,11 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -250,6 +252,7 @@
     <Compile Include="Config\Putty\AbstractPuttySessionsProvider.cs" />
     <Compile Include="Config\DatabaseConnectors\IDatabaseConnector.cs" />
     <Compile Include="Config\DatabaseConnectors\MySqlDatabaseConnector.cs" />
+    <Compile Include="Config\Connections\KeepassHttpConnectionsLoader.cs" />
     <Compile Include="Connection\AbstractConnectionRecord.cs" />
     <Compile Include="Connection\ConnectionInfoComparer.cs" />
     <Compile Include="Connection\ConnectionInfoInheritance.cs" />
@@ -284,6 +287,8 @@
     <Compile Include="Connection\Protocol\RDP\RdpVersion.cs" />
     <Compile Include="Connection\Protocol\VNC\VNCEnum.cs" />
     <Compile Include="Connection\WebHelper.cs" />
+    <Compile Include="Credential\KeePass\KeePassEntry.cs" />
+    <Compile Include="Credential\KeePass\KeePassHttpClient.cs" />
     <Compile Include="Credential\PlaceholderCredentialRecord.cs" />
     <Compile Include="Credential\Repositories\CompositeRepositoryUnlocker.cs" />
     <Compile Include="Credential\CredentialChangedEventArgs.cs" />
@@ -563,6 +568,12 @@
     </Compile>
     <Compile Include="UI\Forms\Input\FrmInputBox.Designer.cs">
       <DependentUpon>FrmInputBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Forms\OptionsPages\KeePassPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\OptionsPages\KeePassPage.Designer.cs">
+      <DependentUpon>KeePassPage.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Forms\OptionsPages\AdvancedPage.Designer.cs">
       <DependentUpon>AdvancedPage.cs</DependentUpon>
@@ -949,6 +960,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\Input\FrmInputBox.resx">
       <DependentUpon>FrmInputBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Forms\OptionsPages\KeePassPage.resx">
+      <DependentUpon>KeePassPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\OptionsPages\AdvancedPage.resx">
       <DependentUpon>AdvancedPage.cs</DependentUpon>
