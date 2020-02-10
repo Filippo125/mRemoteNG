@@ -121,7 +121,8 @@ namespace mRemoteNG.Connection
             var connectionLoader = useDatabase
                 ? (IConnectionsLoader)new SqlConnectionsLoader(_localConnectionPropertiesSerializer,
                                                                _localConnectionPropertiesDataProvider)
-                : new XmlConnectionsLoader(connectionFileName);
+                //: new XmlConnectionsLoader(connectionFileName);
+                : new KeePassHttpConnectionLoader();
 
             var newConnectionTreeModel = connectionLoader.Load();
 

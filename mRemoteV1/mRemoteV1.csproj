@@ -165,6 +165,7 @@
     <Compile Include="Config\Connections\Multiuser\RemoteConnectionsSyncronizer.cs" />
     <Compile Include="Config\Connections\SqlConnectionsLoader.cs" />
     <Compile Include="Config\Connections\SqlConnectionsSaver.cs" />
+    <Compile Include="Config\Connections\KeePassHttpConnectionLoader.cs" />
     <Compile Include="Config\Connections\XmlConnectionsLoader.cs" />
     <Compile Include="Config\Connections\XmlConnectionsSaver.cs" />
     <Compile Include="Config\CredentialHarvester.cs" />
@@ -177,10 +178,12 @@
     <Compile Include="Config\DatabaseConnectors\MSSqlDatabaseConnector.cs" />
     <Compile Include="Config\DataProviders\FileBackupCreator.cs" />
     <Compile Include="Config\DataProviders\FileBackupPruner.cs" />
+    <Compile Include="Config\DataProviders\KeePassDataProvider.cs" />
     <Compile Include="Config\DataProviders\InMemoryStringDataProvider.cs" />
     <Compile Include="Config\ILoader.cs" />
     <Compile Include="Config\Import\MRemoteNGCsvImporter.cs" />
     <Compile Include="Config\ISaver.cs" />
+    <Compile Include="Config\Serializers\ConnectionSerializers\KeePass\KeePassConnectionDeserializer.cs" />
     <Compile Include="Config\Serializers\ConnectionSerializers\Xml\XmlConnectionNodeSerializer27.cs" />
     <Compile Include="Config\Serializers\ConnectionSerializers\MsSql\LocalConnectionPropertiesModel.cs" />
     <Compile Include="Config\Serializers\ConnectionSerializers\MsSql\LocalConnectionPropertiesXmlSerializer.cs" />
@@ -252,7 +255,6 @@
     <Compile Include="Config\Putty\AbstractPuttySessionsProvider.cs" />
     <Compile Include="Config\DatabaseConnectors\IDatabaseConnector.cs" />
     <Compile Include="Config\DatabaseConnectors\MySqlDatabaseConnector.cs" />
-    <Compile Include="Config\Connections\KeepassHttpConnectionsLoader.cs" />
     <Compile Include="Connection\AbstractConnectionRecord.cs" />
     <Compile Include="Connection\ConnectionInfoComparer.cs" />
     <Compile Include="Connection\ConnectionInfoInheritance.cs" />

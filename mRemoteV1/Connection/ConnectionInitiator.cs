@@ -73,7 +73,7 @@ namespace mRemoteNG.Connection
                 }
                 catch (Exception ex)
                 {
-                    //Runtime.MessageCollector.AddExceptionStackTrace("KeepassHttpClient", ex);
+                    Runtime.MessageCollector.AddExceptionStackTrace("KeepassHttpClient", ex);
 
                 }
             }

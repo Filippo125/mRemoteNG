@@ -23,10 +23,10 @@ namespace mRemoteNG.Credential.KeePass
         static readonly HttpClient client = new HttpClient();
 
         private static readonly Encoding encoding = Encoding.UTF8;
-        private string url = "http://localhost:19455";
-        private string uid = "Filippo";
-        private byte[] key = Convert.FromBase64String("tABX2MnvHGnE9PW5YCTfnrh3rYmqTbdDEqtYtsQg/r0=");
-        private string dbHash = "83f864a3b4f2fd3f9e4d4c80424ee84f10d22526";
+        private string url;
+        private string uid;
+        private byte[] key;
+        private string dbHash;
 
 
         public KeePassHttpClient()
@@ -140,8 +140,14 @@ namespace mRemoteNG.Credential.KeePass
             List<object> entries = (List<object>)response["Entries"];
             if (entries.Count >= 1)
             {
-                var entry =(Dictionary<string,object>)entries[0];
-                return new KeePassEntry((string)entry["Name"], (string)entry["Uuid"], (string)entry["Login"], (string)entry["Password"]);
+                //var entry =(Dictionary<string,object>)entries[0];
+                //return new KeePassEntry((string)entry["Name"], (string)entry["Uuid"], (string)entry["Login"], (string)entry["Password"]);
+                var entry = (Dictionary<string, object>)entries[0];
+                var parentGroup = (string)entry["ParentGroup"];
+                var keePassEntry = new KeePassEntry((string)entry["Name"], (string)entry["Uuid"], (string)entry["Login"], (string)entry["Password"], parentGroup);
+                keePassEntry.SetExtraFields((List<Object>)entry["StringFields"]);
+
+                return keePassEntry;
             }
             return new KeePassEntry();
         }
@@ -245,6 +251,24 @@ namespace mRemoteNG.Credential.KeePass
             //return newEntries;
         }
 
+
+        public List<KeePassEntry> GetAllLogin()
+        {
+            var dict = new Dictionary<string, object>();
+            dict.Add("RequestType", "get-logins");
+            dict.Add("Url", "*");
+            dict.Add("SortSelection", false);
+            var response = DoRequest(dict);
+            List<KeePassEntry> keePassEntries = new List<KeePassEntry>();
+            foreach (Dictionary<string, object> entry in (List<object>)response["Entries"])
+            {
+                var parentGroup = (string)entry["ParentGroup"];
+                var keePassEntry = new KeePassEntry((string)entry["Name"], (string)entry["Uuid"], (string)entry["Login"], (string)entry["Password"],parentGroup);
+                keePassEntry.SetExtraFields((List<object>)entry["StringFields"]);
+                keePassEntries.Add(keePassEntry);
+            }
+            return keePassEntries;
+        }
 
         private void LoadConfig()
         {
