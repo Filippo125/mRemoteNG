@@ -18,17 +18,17 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             ApplyTheme();
             PageIcon = Resources.Config_Icon;
             var display = new DisplayProperties();
-            this.KeePassFieldId.Items.Add("UserField");
             this.KeePassFieldId.SelectedItem = "UserField";
             if (KeePassHttpClient.ExistsConfig())
             {
-                this.ngKeePassStatus.Text = "KeePass already integrated";
                 this.ngKeePassStatus.ForeColor = System.Drawing.Color.Green;
+                this.ngKeePassStatus.Text = "KeePass already integrated";
+
             }
             else
             {
-                this.ngKeePassStatus.Text = "KeePass not already integrated";
                 this.ngKeePassStatus.ForeColor = System.Drawing.Color.Red;
+                this.ngKeePassStatus.Text = "KeePass not already integrated";
             }
 
         }

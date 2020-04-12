@@ -66,6 +66,8 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             // 
             this.KeePassFieldId._mice = mRemoteNG.UI.Controls.Base.NGComboBox.MouseState.HOVER;
             this.KeePassFieldId.FormattingEnabled = true;
+            this.KeePassFieldId.Items.AddRange(new object[] {
+            "UserField"});
             this.KeePassFieldId.Location = new System.Drawing.Point(335, 61);
             this.KeePassFieldId.Name = "KeePassFieldId";
             this.KeePassFieldId.Size = new System.Drawing.Size(217, 31);

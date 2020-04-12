@@ -24,9 +24,9 @@ namespace mRemoteNG.Credential.KeePass
 
         private static readonly Encoding encoding = Encoding.UTF8;
         private string url = "http://localhost:19455";
-        private string uid = "Filippo";
-        private byte[] key = Convert.FromBase64String("tABX2MnvHGnE9PW5YCTfnrh3rYmqTbdDEqtYtsQg/r0=");
-        private string dbHash = "83f864a3b4f2fd3f9e4d4c80424ee84f10d22526";
+        private string uid = "";
+        private byte[] key = Convert.FromBase64String("");
+        private string dbHash = "";
 
 
         public KeePassHttpClient()

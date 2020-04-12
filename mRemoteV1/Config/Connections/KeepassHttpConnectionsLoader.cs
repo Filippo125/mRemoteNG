@@ -31,9 +31,9 @@ namespace mRemoteNG.Config.Connections
 
         private static readonly Encoding encoding = Encoding.UTF8;
         private readonly string _url = "http://localhost:19455";
-        private readonly string uid = "Filippo";
-        private readonly byte[] key = Convert.FromBase64String("tABX2MnvHGnE9PW5YCTfnrh3rYmqTbdDEqtYtsQg/r0=");
-        private readonly string dbHash = "83f864a3b4f2fd3f9e4d4c80424ee84f10d22526";
+        private readonly string uid = "";
+        private readonly byte[] key = Convert.FromBase64String("");
+        private readonly string dbHash = "";
 
 
 
