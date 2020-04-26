@@ -286,6 +286,7 @@
     <Compile Include="Connection\Protocol\RDP\RDPSounds.cs" />
     <Compile Include="Connection\Protocol\RDP\RdpVersion.cs" />
     <Compile Include="Connection\Protocol\VNC\VNCEnum.cs" />
+    <Compile Include="Connection\Protocol\Winbox\Connection.Protocol.Winbox.cs" />
     <Compile Include="Connection\WebHelper.cs" />
     <Compile Include="Credential\KeePass\KeePassEntry.cs" />
     <Compile Include="Credential\KeePass\KeePassHttpClient.cs" />
@@ -303,6 +304,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Language\Language.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Language.resx</DependentUpon>
     </Compile>
     <Compile Include="Resources\Themes\ColorMapTheme.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -696,11 +702,6 @@
     </Compile>
     <Compile Include="UI\Forms\PasswordForm.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Resources\Language\Language.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Language.resx</DependentUpon>
     </Compile>
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1303,6 +1304,7 @@
     <Content Include="Icons\PowerShell.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Images\winbox_icon.png" />
     <Content Include="Schemas\mremoteng_confcons_v2_6.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
