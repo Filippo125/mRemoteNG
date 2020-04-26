@@ -2986,5 +2986,29 @@ namespace mRemoteNG {
                 this["CloseToTray"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("UserField")]
+        public string KeePassField {
+            get {
+                return ((string)(this["KeePassField"]));
+            }
+            set {
+                this["KeePassField"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseKeePass {
+            get {
+                return ((bool)(this["UseKeePass"]));
+            }
+            set {
+                this["UseKeePass"] = value;
+            }
+        }
     }
 }

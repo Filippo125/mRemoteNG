@@ -127,7 +127,7 @@ namespace mRemoteNG.UI.Controls.ConnectionInfoPropertyGrid
                     }
                     else if (SelectedConnectionInfo is RootNodeInfo)
                     {
-                        BrowsableProperties = new[]
+                        BrowsableProperties = new string[]
                         {
                             nameof(RootNodeInfo.Name),
                             nameof(RootNodeInfo.Password)
